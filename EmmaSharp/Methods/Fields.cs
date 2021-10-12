@@ -3,6 +3,7 @@ using EmmaSharp.Models.Fields;
 using RestSharp;
 using RestSharp.Serializers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -18,7 +19,7 @@ namespace EmmaSharp
 		/// </summary>
 		/// <param name="deleted">Accepts True. Optional flag to include deleted fields</param>
 		/// <returns>An array of fields.</returns>
-		public int ListFieldsCount(bool deleted = false)
+		public Task<int> ListFieldsCount(bool deleted = false)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/fields";
@@ -37,7 +38,7 @@ namespace EmmaSharp
         /// <param name="start">Start paging record at.</param>
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of fields.</returns>
-		public List<Field> ListFields(bool deleted = false, int start = -1, int end = -1)
+		public Task<List<Field>> ListFields(bool deleted = false, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/fields";
@@ -55,7 +56,7 @@ namespace EmmaSharp
         /// <param name="deleted">Accepts True. Optionally show a field even if it has been deleted.</param>
         /// <returns>A field.</returns>
         /// <remarks>Http404 if the field does not exist.</remarks>
-        public Field GetField(string fieldId, bool deleted = false)
+        public Task<Field> GetField(string fieldId, bool deleted = false)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/fields/{fieldId}";
@@ -72,14 +73,14 @@ namespace EmmaSharp
         /// </summary>
         /// <param name="field">The Field to be created.</param>
         /// <returns>A reference (Field ID as int) to the new field.</returns>
-        public int CreateField(CreateField field)
+        public Task<int> CreateField(CreateField field)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/fields";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(field);
+            request.AddJsonBody(field);
 
             return Execute<int>(request);
         }
@@ -89,7 +90,7 @@ namespace EmmaSharp
         /// </summary>
         /// <param name="fieldId">The Field Id of the field to delete.</param>
         /// <returns>True if the field is deleted, False otherwise.</returns>
-        public bool DeleteField(string fieldId)
+        public Task<bool> DeleteField(string fieldId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/fields/{fieldId}";
@@ -104,7 +105,7 @@ namespace EmmaSharp
         /// </summary>
         /// <param name="fieldId">The Field Id of the field to clear.</param>
         /// <returns>True if all of the member field data is deleted</returns>
-        public bool ClearField(string fieldId)
+        public Task<bool> ClearField(string fieldId)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/fields/{fieldId}/clear";
@@ -119,7 +120,7 @@ namespace EmmaSharp
         /// <param name="fieldId">The Field Id of the field to update.</param>
         /// <param name="field">The Field to be updated.</param>
         /// <returns>A reference (Field ID as int) to the updated field.</returns>
-        public int UpdateField(string fieldId, UpdateField field)
+        public Task<int> UpdateField(string fieldId, UpdateField field)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/fields/{fieldId}";
@@ -127,7 +128,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(field);
+            request.AddJsonBody(field);
 
             return Execute<int>(request);
         }

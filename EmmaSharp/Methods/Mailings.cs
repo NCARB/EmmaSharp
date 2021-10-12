@@ -8,6 +8,7 @@ using RestSharp;
 using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -29,7 +30,7 @@ namespace EmmaSharp
         /// <param name="withPlaintext">Boolean. Include the plaintext content.</param>
         /// <returns>An number of mailings.</returns>
         /// <remarks>Http400 if invalid mailing types or statuses are specified.</remarks>
-        public int ListMailingsCount(bool archived = false, List<MailingType> mailingType = null, List<MailingStatus> mailingStatus = null, bool isScheduled = false, bool withHtmlBody = false, bool withPlaintext = false)
+        public Task<int> ListMailingsCount(bool archived = false, List<MailingType> mailingType = null, List<MailingStatus> mailingStatus = null, bool isScheduled = false, bool withHtmlBody = false, bool withPlaintext = false)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/mailings";
@@ -69,7 +70,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of mailings.</returns>
         /// <remarks>Http400 if invalid mailing types or statuses are specified.</remarks>
-        public List<MailingInfo> ListMailings(bool archived = false, List<MailingType> mailingType = null, List<MailingStatus> mailingStatus = null, bool isScheduled = false, bool withHtmlBody = false, bool withPlaintext = false, int start = -1, int end = -1)
+        public Task<List<MailingInfo>> ListMailings(bool archived = false, List<MailingType> mailingType = null, List<MailingStatus> mailingStatus = null, bool isScheduled = false, bool withHtmlBody = false, bool withPlaintext = false, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/mailings";
@@ -101,7 +102,7 @@ namespace EmmaSharp
 		/// <returns>The mailing.</returns>
 		/// <param name="mailingId">Mailing identifier.</param>
 		/// <remarks>Http404 if no mailing is found.</remarks>
-		public Mailing GetMailing(string mailingId)
+		public Task<Mailing> GetMailing(string mailingId)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}";
@@ -116,7 +117,7 @@ namespace EmmaSharp
         /// <returns>An array of members including status and member fields.</returns>
         /// <param name="mailingId">Mailing identifier.</param>
         /// <remarks>Http404 if no mailing is found.</remarks>
-        public int GetMailingMembersCount(string mailingId)
+        public Task<int> GetMailingMembersCount(string mailingId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/mailings/{mailingId}/members";
@@ -134,7 +135,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of members including status and member fields.</returns>
 		/// <remarks>Http404 if no mailing is found.</remarks>
-        public List<Member> GetMailingMembers(string mailingId, int start = -1, int end = -1)
+        public Task<List<Member>> GetMailingMembers(string mailingId, int start = -1, int end = -1)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}/members";
@@ -151,7 +152,7 @@ namespace EmmaSharp
 		/// <param name="memberId">Member identifier.</param>
 		/// <param name="type">Accepts: ‘all’, ‘html’, ‘plaintext’, ‘subject’. Defaults to ‘all’, if not provided.</param>
 		/// <remarks>Http404 if no mailing is found.</remarks>
-        public MailingPersonalization GetMailingMembersPersonalization(string mailingId, string memberId, PersonalizationType? type = null)
+        public Task<MailingPersonalization> GetMailingMembersPersonalization(string mailingId, string memberId, PersonalizationType? type = null)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}/messages/{memberId}";
@@ -170,7 +171,7 @@ namespace EmmaSharp
         /// <returns>An array of groups.</returns>
         /// <param name="mailingId">Mailing identifier.</param>
         /// <remarks>Http404 if no mailing is found.</remarks>
-        public int GetMailingGroupsCount(string mailingId)
+        public Task<int> GetMailingGroupsCount(string mailingId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/mailings/{mailingId}/groups";
@@ -188,7 +189,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of groups.</returns>
 		/// <remarks>Http404 if no mailing is found.</remarks>
-        public List<Group> GetMailingGroups(string mailingId, int start = -1, int end = -1)
+        public Task<List<Group>> GetMailingGroups(string mailingId, int start = -1, int end = -1)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}/groups";
@@ -203,7 +204,7 @@ namespace EmmaSharp
 		/// <returns>An array of searches.</returns>
 		/// <param name="mailingId">Mailing identifier.</param>
 		/// <remarks>Http404 if no mailing is found.</remarks>
-		public List<Search> GetMailingSearches(string mailingId)
+		public Task<List<Search>> GetMailingSearches(string mailingId)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}/searches";
@@ -218,7 +219,7 @@ namespace EmmaSharp
 		/// <returns>Returns the mailing’s new status.</returns> 
 		/// <param name="mailingId">Mailing identifier.</param>
 		/// <param name="status">The status can be one of canceled, paused or ready. This method can be used to control the progress of a mailing by pausing, canceling or resuming it. Once a mailing is canceled it can’t be resumed, and will not show in the normal mailing_list output.</param>
-        public UpdateMailing UpdateMailingStatus(string mailingId, UpdateMailingStatus status)
+        public Task<UpdateMailing> UpdateMailingStatus(string mailingId, UpdateMailingStatus status)
 		{
 			var request = new RestRequest(Method.PUT);
 			request.Resource = "/{accountId}/mailings/{mailingId}";
@@ -226,7 +227,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(new { status = status.ToEnumString<UpdateMailingStatus>() });
+            request.AddJsonBody(new { status = status.ToEnumString<UpdateMailingStatus>() });
 
             return Execute<UpdateMailing>(request);
 		}
@@ -236,7 +237,7 @@ namespace EmmaSharp
 		/// </summary>
 		/// <returns>True if the mailing is successfully archived.</returns>
 		/// <param name="mailingId">Mailing identifier.</param>
-		public bool ArchiveMailing(string mailingId)
+		public Task<bool> ArchiveMailing(string mailingId)
 		{
 			var request = new RestRequest(Method.DELETE);
 			request.Resource = "/{accountId}/mailings/{mailingId}";
@@ -250,7 +251,7 @@ namespace EmmaSharp
 		/// </summary>
 		/// <returns>True if mailing marked as cancelled.</returns>
 		/// <param name="mailingId">Mailing identifier.</param>
-		public bool CancelMailing(string mailingId)
+		public Task<bool> CancelMailing(string mailingId)
 		{
 			var request = new RestRequest(Method.DELETE);
 			request.Resource = "/{accountId}/mailings/cancel/{mailingId}";
@@ -267,7 +268,7 @@ namespace EmmaSharp
 		/// <param name="memberId">Member identifier.</param>
 		/// <param name="mailing">Class representing the fields to forward and email to additional recipients.</param>
 		/// <remarks>Http404 if no message is found.</remarks>
-        public MailingIdentifier ForwardMailing(string mailingId, string memberId, ForwardMailing mailing)
+        public Task<MailingIdentifier> ForwardMailing(string mailingId, string memberId, ForwardMailing mailing)
 		{
 			var request = new RestRequest(Method.POST);
 			request.Resource = "/{accountId}/forwards/{mailingId}/{memberId}";
@@ -276,7 +277,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(mailing);
+            request.AddJsonBody(mailing);
 
             return Execute<MailingIdentifier>(request);
 		}
@@ -288,7 +289,7 @@ namespace EmmaSharp
 		/// <param name="mailingId">Mailing identifier.</param>
 		/// <param name="mailing">Class representing the available fields when resending a mailing.</param>
 		/// <remarks>Http404 if no message is found.</remarks>
-        public MailingIdentifier ResendMailing(string mailingId, ResendMailing mailing)
+        public Task<MailingIdentifier> ResendMailing(string mailingId, ResendMailing mailing)
 		{
 			var request = new RestRequest(Method.POST);
 			request.Resource = "/{accountId}/mailings/{mailingId}";
@@ -296,7 +297,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(mailing);
+            request.AddJsonBody(mailing);
 
             return Execute<MailingIdentifier>(request);
 		}
@@ -306,7 +307,7 @@ namespace EmmaSharp
 		/// </summary>
 		/// <returns>An array of heads up email addresses.</returns>
 		/// <param name="mailingId">Mailing identifier.</param>
-        public List<MailingHeadsUp> GetHeadsUpEmailsForMailing(string mailingId)
+        public Task<List<MailingHeadsUp>> GetHeadsUpEmailsForMailing(string mailingId)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/mailings/{mailingId}/headsup";
@@ -321,14 +322,14 @@ namespace EmmaSharp
 		/// <returns><c>true</c>, if personalization syntax was validated, <c>false</c> otherwise.</returns>
         /// <param name="personalization">HTML body, plaintext body and subject line for personalization testing.</param>
 		/// <remarks>Http400 if any tags are invalid. The response body will have information about the invalid tags.</remarks>
-		public bool VaildatePersonalizationSyntax(MailingPersonalization personalization)
+		public Task<bool> VaildatePersonalizationSyntax(MailingPersonalization personalization)
 		{
 			var request = new RestRequest(Method.POST);
 			request.Resource = "/{accountId}/mailings/validate";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(personalization);
+            request.AddJsonBody(personalization);
 
 			return Execute<bool>(request);
 		}
@@ -340,7 +341,7 @@ namespace EmmaSharp
 		/// <param name="mailingId">Mailing identifier.</param>
 		/// <param name="winnerId">Winner identifier.</param>
 		/// <remarks>Http403 if the winner cannot be manually declared.</remarks>
-		public bool DeclareWinner(string mailingId, string winnerId)
+		public Task<bool> DeclareWinner(string mailingId, string winnerId)
 		{
 			var request = new RestRequest(Method.POST);
 			request.Resource = "/{accountId}/mailings/{mailingId}/winner/{winnerId}";

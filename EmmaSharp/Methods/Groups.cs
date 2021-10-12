@@ -6,6 +6,7 @@ using RestSharp;
 using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -20,7 +21,7 @@ namespace EmmaSharp
 		/// Get number of all active member groups for a single account.
 		/// </summary>
 		/// <returns>An int of groups.</returns>
-        public int ListGroupCount(List<GroupType> groupType = null)
+        public Task<int> ListGroupCount(List<GroupType> groupType = null)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/groups";
@@ -39,7 +40,7 @@ namespace EmmaSharp
 		/// <param name="start">Start paging record at.</param>
 		/// <param name="end">End paging record at.</param>
         /// <returns>An array of groups.</returns>
-		public List<Group> ListGroups(List<GroupType> groupType = null, int start = -1, int end = -1)
+		public Task<List<Group>> ListGroups(List<GroupType> groupType = null, int start = -1, int end = -1)
         {
             var request = new RestRequest();
 			request.Resource = "/{accountId}/groups";
@@ -55,14 +56,14 @@ namespace EmmaSharp
         /// </summary>
         /// <param name="groups">A Group to be created. Each object must contain a group_name parameter.</param>
         /// <returns>An array of the new group ids and group names.</returns>
-        public List<Group> CreateGroups(CreateGroups groups)
+        public Task<List<Group>> CreateGroups(CreateGroups groups)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/groups";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(groups);
+            request.AddJsonBody(groups);
 
             return Execute<List<Group>>(request);
         }
@@ -73,7 +74,7 @@ namespace EmmaSharp
         /// <param name="memberGroupId">The Member Group Id to be retrieved.</param>
         /// <returns>A group.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public Group GetGroup(string memberGroupId)
+        public Task<Group> GetGroup(string memberGroupId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/groups/{memberGroupId}";
@@ -89,7 +90,7 @@ namespace EmmaSharp
         /// <param name="group">The Group to be updated.</param>
         /// <returns>True if the update was successful</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public bool UpdateGroup(string memberGroupId, UpdateGroup group)
+        public Task<bool> UpdateGroup(string memberGroupId, UpdateGroup group)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/groups/{memberIdGroup}";
@@ -97,7 +98,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(group);
+            request.AddJsonBody(group);
 
             return Execute<bool>(request);
         }
@@ -108,7 +109,7 @@ namespace EmmaSharp
         /// <param name="memberIdGroup">The Member Group Id to be deleted.</param>
         /// <returns>True if the group is deleted.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public bool DeleteGroup(string memberIdGroup)
+        public Task<bool> DeleteGroup(string memberIdGroup)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/groups/{memberIdGroup}";
@@ -127,7 +128,7 @@ namespace EmmaSharp
         /// <param name="deleted">Include deleted members. Optional, defaults to false.</param>
         /// <returns>An array of members.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public int ListGroupMembersCount(string memberGroupId, bool deleted = false)
+        public Task<int> ListGroupMembersCount(string memberGroupId, bool deleted = false)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/groups/{memberGroupId}/members";
@@ -148,7 +149,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of members.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public List<Member> ListGroupMembers(string memberGroupId, bool deleted = false, int start = -1, int end = -1)
+        public Task<List<Member>> ListGroupMembers(string memberGroupId, bool deleted = false, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/groups/{memberGroupId}/members";
@@ -167,7 +168,7 @@ namespace EmmaSharp
         /// <param name="memberIds">An array of member ids.</param>
         /// <returns>An array of references to the members added to the group. If a member already exists in the group or is not a valid member, that reference will not be returned.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public List<int> AddMembersToGroup(string memberGroupId, MemberIdList memberIds)
+        public Task<List<int>> AddMembersToGroup(string memberGroupId, MemberIdList memberIds)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/groups/{memberGroupId}/members";
@@ -175,7 +176,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(memberIds);
+            request.AddJsonBody(memberIds);
 
             return Execute<List<int>>(request);
         }
@@ -187,7 +188,7 @@ namespace EmmaSharp
         /// <param name="memberIds">An array of member ids.</param>
         /// <returns>An array of references to the removed members.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public List<int> RemoveMembersFromGroup(string memberGroupId, MemberIdList memberIds) 
+        public Task<List<int>> RemoveMembersFromGroup(string memberGroupId, MemberIdList memberIds) 
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/groups/{memberGroupId}/members/remove";
@@ -195,7 +196,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(memberIds);
+            request.AddJsonBody(memberIds);
 
             return Execute<List<int>>(request);
         }
@@ -207,7 +208,7 @@ namespace EmmaSharp
         /// <param name="status">A Member Status string. Optional. This is ‘a’ (active), ‘o’ (optout), or ‘e’ (error).</param>
         /// <returns>Returns the number of members removed from the group.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public int DeleteAllMembersFromGroup(string memberGroupId, MemberStatusShort? status = null)
+        public Task<int> DeleteAllMembersFromGroup(string memberGroupId, MemberStatusShort? status = null)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/groups/{memberGroupId}/members";
@@ -226,7 +227,7 @@ namespace EmmaSharp
         /// <param name="status">A Member Status string. This is ‘a’ (active), ‘o’ (optout), or ‘e’ (error).</param>
         /// <returns>Returns true.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public bool DeleteAllFromMemberGroupsByStatus(string memberGroupId, MemberStatusShort status)
+        public Task<bool> DeleteAllFromMemberGroupsByStatus(string memberGroupId, MemberStatusShort status)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/groups/{memberGroupId}/members/remove";
@@ -245,7 +246,7 @@ namespace EmmaSharp
         /// <param name="status">An Array of Member Status strings. This is ‘a’ (active), ‘o’ (optout), or ‘e’ (error).</param>
         /// <returns>Returns true.</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public bool CopyUsersFromGroup(string fromGroupId, string toGroupId, MemberStatusShortList status)
+        public Task<bool> CopyUsersFromGroup(string fromGroupId, string toGroupId, MemberStatusShortList status)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/groups/{fromGroupId}/{toGroupId}/members/copy";
@@ -254,7 +255,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(status);
+            request.AddJsonBody(status);
 
             return Execute<bool>(request);
         }

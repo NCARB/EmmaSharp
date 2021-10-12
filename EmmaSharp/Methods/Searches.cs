@@ -3,6 +3,7 @@ using EmmaSharp.Models.Searches;
 using RestSharp;
 using RestSharp.Serializers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -19,7 +20,7 @@ namespace EmmaSharp
         /// <param name="deleted">Accepts True or 1. Optional flag to include deleted searches.</param>
         /// <returns>An array of searches.</returns>
         /// <remarks></remarks>
-        public int GetSearchesCount(bool deleted = false)
+        public Task<int> GetSearchesCount(bool deleted = false)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/searches";
@@ -39,7 +40,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of searches.</returns>
         /// <remarks></remarks>
-        public List<Search> GetSearches(bool deleted = false, int start = -1, int end = -1)
+        public Task<List<Search>> GetSearches(bool deleted = false, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/searches";
@@ -57,7 +58,7 @@ namespace EmmaSharp
         /// <param name="deleted">>Accepts True or 1. Optional flag to include deleted searches.</param>
         /// <returns>A search.</returns>
         /// <remarks>Http404 if the search does not exist.</remarks>
-        public Search GetSearchDetails(string searchId, bool deleted = false)
+        public Task<Search> GetSearchDetails(string searchId, bool deleted = false)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/searches/{searchId}";
@@ -75,14 +76,14 @@ namespace EmmaSharp
         /// <param name="search">A name used to describe this search and a combination of search conditions, as described in the documentation.</param>
         /// <returns>The ID of the new search.</returns>
         /// <remarks>Http400 if the search is invalid.</remarks>
-        public int CreateSavedSearch(CreateSearch search) 
+        public Task<int> CreateSavedSearch(CreateSearch search) 
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/searches";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(search);
+            request.AddJsonBody(search);
 
             return Execute<int>(request);        
         }
@@ -94,7 +95,7 @@ namespace EmmaSharp
         /// <param name="search">A name used to describe this search and/or a combination of search conditions, as described in the documentation.</param>
         /// <returns>True if the update was successful</returns>
         /// <remarks>Http404 if the search does not exist. Http400 if the search criteria is invalid.</remarks>
-        public bool UpdateSavedSearch(string searchId, CreateSearch search) 
+        public Task<bool> UpdateSavedSearch(string searchId, CreateSearch search) 
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/searches/{searchId}";
@@ -102,7 +103,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(search);
+            request.AddJsonBody(search);
 
             return Execute<bool>(request);
         }
@@ -113,7 +114,7 @@ namespace EmmaSharp
         /// <param name="searchId">Search identifier</param>
         /// <returns>True if the search is deleted.</returns>
         /// <remarks>Http404 if the search does not exist.</remarks>
-        public bool DeleteSavedSearch(string searchId)
+        public Task<bool> DeleteSavedSearch(string searchId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/searches/{searchId}";
@@ -127,7 +128,7 @@ namespace EmmaSharp
         /// </summary>
         /// <param name="searchId">Search identifier</param>
         /// <returns>An array of members.</returns>
-        public int GetMembersMatchingSearchCount(string searchId)
+        public Task<int> GetMembersMatchingSearchCount(string searchId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/searches/{searchId}/members";
@@ -145,7 +146,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of members.</returns>
         /// <remarks>Http404 if the search does not exist.</remarks>
-        public List<Member> GetMembersMatchingSearch(string searchId, int start = -1, int end = -1)
+        public Task<List<Member>> GetMembersMatchingSearch(string searchId, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/searches/{searchId}/members";
