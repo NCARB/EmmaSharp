@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmmaSharp.Models.Members
 {
@@ -31,7 +27,7 @@ namespace EmmaSharp.Models.Members
         /// Optional. Indicate that this member used a particular signup form. This is important if you have custom mailings for a particular signup form and so that signup-based triggers will be fired.
         /// </summary>
         [JsonProperty("signup_form_id", NullValueHandling = NullValueHandling.Ignore)]
-        public int? SignupFormId { get; set; }
+        public long? SignupFormId { get; set; }
 
         /// <summary>
         /// Optional. Override the confirmation message subject with your own copy.

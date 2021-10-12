@@ -45,7 +45,7 @@ namespace EmmaSharp.Models.Triggers
 
         // Need more info from Emma
         [JsonProperty("signups")]
-        public int?[] Signups { get; set; }
+        public long?[] Signups { get; set; }
 
         // Need more info from Emma
         [JsonProperty("push_offset")]

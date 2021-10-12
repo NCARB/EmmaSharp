@@ -8,7 +8,7 @@ namespace EmmaSharp.Models.Webhooks
         public string EventName { get; set; }
 
         [JsonProperty("webhook_event_id")]
-        public int? WebhookEventId { get; set; }
+        public long? WebhookEventId { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }
