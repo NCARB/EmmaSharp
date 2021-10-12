@@ -6,6 +6,7 @@ using EmmaSharp.Models.Members;
 using RestSharp;
 using RestSharp.Serializers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -25,7 +26,7 @@ namespace EmmaSharp
 		/// </summary>
 		/// <returns>A list of members in the given account.</returns>
 		/// <param name="deleted">Accepts True. Optional flag to include deleted members.</param>
-		public int GetMemberCount(bool deleted = false)
+		public Task<int> GetMemberCount(bool deleted = false)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/members";
@@ -44,7 +45,7 @@ namespace EmmaSharp
 		/// <param name="deleted">Accepts True. Optional flag to include deleted members.</param>
         /// <param name="start">Pagination: start page. Defaults to first page (e.g. 0).</param>
         /// <param name="end">Pagination: end page. Defaults to first page (e.g. 500).</param>
-		public List<Member> ListMembers(bool deleted = false, int start = -1, int end = -1)
+		public Task<List<Member>> ListMembers(bool deleted = false, int start = -1, int end = -1)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/members";
@@ -62,7 +63,7 @@ namespace EmmaSharp
 		/// <param name="memberId">Member identifier.</param>
 		/// <param name="deleted">Accepts True. Optional flag to include deleted members.</param>
 		/// <remarks>Http404 if no member is found.</remarks>
-		public Member GetMember(string memberId, bool deleted = false)
+		public Task<Member> GetMember(string memberId, bool deleted = false)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/members/{memberId}";
@@ -81,7 +82,7 @@ namespace EmmaSharp
 		/// <param name="memberEmail">Member email.</param>
 		/// <param name="deleted">Accepts True. Optional flag to include deleted members.</param>
 		/// <remarks>Http404 if no member is found.</remarks>
-		public Member GetMemberByEmail(string memberEmail, bool deleted = false)
+		public Task<Member> GetMemberByEmail(string memberEmail, bool deleted = false)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/members/email/{memberEmail}";
@@ -99,7 +100,7 @@ namespace EmmaSharp
         /// <param name="memberId">Member identifier.</param>
 		/// <returns>Member opt out date and mailing if member is opted out.</returns>
 		/// <remarks>Http404 if no member is found.</remarks>
-		public List<MemberOptout> GetMemberOptout(string memberId)
+		public Task<List<MemberOptout>> GetMemberOptout(string memberId)
 		{
 			var request = new RestRequest();
 			request.Resource = "/{accountId}/members/{memberId}/optout";
@@ -114,7 +115,7 @@ namespace EmmaSharp
         /// <param name="memberEmail">Member email address for optout.</param>
         /// <returns>True if member status change was successful or member was already opted out.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public bool UpdateMemberToOptoutByEmail(string memberEmail)
+        public Task<bool> UpdateMemberToOptoutByEmail(string memberEmail)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/email/optout/{memberEmail}";
@@ -129,14 +130,14 @@ namespace EmmaSharp
         /// <param name="members">An array of members to update. A member is a dictionary of member emails and field values to import. The only required field is “email”. All other fields are treated as the name of a member field.</param>
         /// <returns>An import id.</returns>
         /// <remarks></remarks>
-        public MembersAdd AddNewMembers(AddMembers members)
+        public Task<MembersAdd> AddNewMembers(AddMembers members)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/members";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(members);
+            request.AddJsonBody(members);
 
             return Execute<MembersAdd>(request);
         }
@@ -147,14 +148,14 @@ namespace EmmaSharp
         /// <param name="member">Fields related to adding or updating a Member.</param>
         /// <returns>The member_id of the new or updated member, whether the member was added or an existing member was updated, and the status of the member. The status will be reported as ‘a’ (active), ‘e’ (error), or ‘o’ (optout).</returns>
         /// <remarks></remarks>
-        public MemberAdd AddOrUpdateSingleMember(AddMember member)
+        public Task<MemberAdd> AddOrUpdateSingleMember(AddMember member)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/members/add";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(member);
+            request.AddJsonBody(member);
 
             return Execute<MemberAdd>(request);
         }
@@ -165,14 +166,14 @@ namespace EmmaSharp
         /// <param name="member">Fields related to signing up a member.</param>
         /// <returns>The member_id of the member, and their status. The status will be reported as ‘a’ (active), ‘e’ (error), or ‘o’ (optout).</returns>
         /// <remarks></remarks>
-        public MemberSignup MemberSignup(SignupMember member)
+        public Task<MemberSignup> MemberSignup(SignupMember member)
         {
             var request = new RestRequest(Method.POST);
             request.Resource = "/{accountId}/members/signup";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(member);
+            request.AddJsonBody(member);
 
             return Execute<MemberSignup>(request);
         }
@@ -183,14 +184,14 @@ namespace EmmaSharp
         /// <param name="members">Class representing an array of member ids to delete.</param>
         /// <returns>True if all members are successfully deleted, otherwise False.</returns>
         /// <remarks></remarks>
-        public bool DeleteMembers(DeleteMembers members)
+        public Task<bool> DeleteMembers(DeleteMembers members)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/delete";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(members);
+            request.AddJsonBody(members);
 
             return Execute<bool>(request);
         }
@@ -201,14 +202,14 @@ namespace EmmaSharp
         /// <param name="status">Class representing members and their new status.</param>
         /// <returns>True if the members are successfully updated, otherwise False.</returns>
         /// <remarks></remarks>
-        public bool ChangeMemberStatus(ChangeStatus status)
+        public Task<bool> ChangeMemberStatus(ChangeStatus status)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/status";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(status);
+            request.AddJsonBody(status);
 
             return Execute<bool>(request);
         }
@@ -220,7 +221,7 @@ namespace EmmaSharp
         /// <param name="member">Class representing fields to update member information.</param>
         /// <returns>True if the member was updated successfully</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public bool UpdateSingleMemberInformation(string memberId, UpdateMember member)
+        public Task<bool> UpdateSingleMemberInformation(string memberId, UpdateMember member)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/{memberId}";
@@ -228,7 +229,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(member);
+            request.AddJsonBody(member);
 
             return Execute<bool>(request);
         }
@@ -239,7 +240,7 @@ namespace EmmaSharp
         /// <param name="memberId">Member identifier.</param>
         /// <returns>True if the member is deleted.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public bool DeleteMember(string memberId)
+        public Task<bool> DeleteMember(string memberId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/members/{memberId}";
@@ -254,7 +255,7 @@ namespace EmmaSharp
         /// <param name="memberId">Member identifier.</param>
         /// <returns>An array of groups.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public List<Group> GetMemberGroups(string memberId)
+        public Task<List<Group>> GetMemberGroups(string memberId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/{memberId}/groups";
@@ -270,7 +271,7 @@ namespace EmmaSharp
         /// <param name="groupIds">Group ids to which to add this member.</param>
         /// <returns>An array of ids of the affected groups.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public List<int> AddMemberToGroups(string memberId, List<int> groupIds)
+        public Task<List<int>> AddMemberToGroups(string memberId, List<int> groupIds)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/{memberId}/groups";
@@ -278,7 +279,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(new { group_ids = groupIds });
+            request.AddJsonBody(new { group_ids = groupIds });
 
             return Execute<List<int>>(request);
         }
@@ -290,7 +291,7 @@ namespace EmmaSharp
         /// <param name="groupIds">Group ids from which to remove this member</param>
         /// <returns>An array of references to the affected groups.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public List<int> RemoveMemberFromGroups(string memberId, List<int> groupIds)
+        public Task<List<int>> RemoveMemberFromGroups(string memberId, List<int> groupIds)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/{memberId}/groups/remove";
@@ -298,7 +299,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(new { group_ids = groupIds });
+            request.AddJsonBody(new { group_ids = groupIds });
 
             return Execute<List<int>>(request);
         }
@@ -309,7 +310,7 @@ namespace EmmaSharp
         /// <param name="memberStatusId">This is ‘a’ (active), ‘o’ (optout), or ‘e’ (error).</param>
         /// <returns>Returns true.</returns>
         /// <remarks></remarks>
-        public bool DeleteAllMembers(MemberStatusShort memberStatusId)
+        public Task<bool> DeleteAllMembers(MemberStatusShort memberStatusId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/members";
@@ -324,7 +325,7 @@ namespace EmmaSharp
         /// <param name="memberId">Member identifier.</param>
         /// <returns>True if the member is removed from all groups.</returns>
         /// <remarks>Http404 if no member is found.</remarks>
-        public bool RemoveMemberFromAllGroups(string memberId)
+        public Task<bool> RemoveMemberFromAllGroups(string memberId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/members/{memberId}/groups";
@@ -339,14 +340,14 @@ namespace EmmaSharp
         /// <param name="groups">Class representing members and the groups to remove them from.</param>
         /// <returns>True if the members are deleted, otherwise False.</returns>
         /// <remarks>Http404 if any of the members or groups do not exist</remarks>
-        public bool RemoveMembersFromGroups(RemoveMemberGroups groups)
+        public Task<bool> RemoveMembersFromGroups(RemoveMemberGroups groups)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/groups/remove";
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(groups);
+            request.AddJsonBody(groups);
 
             return Execute<bool>(request);
         }
@@ -357,7 +358,7 @@ namespace EmmaSharp
         /// <param name="memberId">Member identifier.</param>
         /// <returns>Message history details for the specified member.</returns>
         /// <remarks></remarks>
-        public int GetMemberMailingHistoryCount(string memberId)
+        public Task<int> GetMemberMailingHistoryCount(string memberId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/{memberId}/mailings";
@@ -376,7 +377,7 @@ namespace EmmaSharp
         /// <param name="end">Pagination: end page. Defaults to first page (e.g. 500).</param>
         /// <returns>Message history details for the specified member.</returns>
         /// <remarks></remarks>
-        public List<MailingHistory> GetMemberMailingHistory(string memberId, int start = -1, int end = -1) 
+        public Task<List<MailingHistory>> GetMemberMailingHistory(string memberId, int start = -1, int end = -1) 
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/{memberId}/mailings";
@@ -391,7 +392,7 @@ namespace EmmaSharp
         /// <param name="importId">Import identifier.</param>
         /// <returns>A list of members in the given account and import.</returns>
         /// <remarks></remarks>
-        public int GetMembersAffectedByImportCount(string importId)
+        public Task<int> GetMembersAffectedByImportCount(string importId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/imports/{importId}/members";
@@ -410,7 +411,7 @@ namespace EmmaSharp
         /// <param name="end">Pagination: end page. Defaults to first page (e.g. 500).</param>
         /// <returns>A list of members in the given account and import.</returns>
         /// <remarks></remarks>
-        public List<ImportMembers> GetMembersAffectedByImport(string importId, int start = -1, int end = -1) 
+        public Task<List<ImportMembers>> GetMembersAffectedByImport(string importId, int start = -1, int end = -1) 
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/imports/{importId}/members";
@@ -425,7 +426,7 @@ namespace EmmaSharp
         /// <param name="importId">Import identifier.</param>
         /// <returns>Import details for the given import_id.</returns>
         /// <remarks></remarks>
-        public Import GetImportInformation(string importId) 
+        public Task<Import> GetImportInformation(string importId) 
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/imports/{importId}";
@@ -439,7 +440,7 @@ namespace EmmaSharp
         /// </summary>
         /// <returns>An array of import details.</returns>
         /// <remarks></remarks>
-        public int GetAllImportsCount()
+        public Task<int> GetAllImportsCount()
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/imports";
@@ -456,7 +457,7 @@ namespace EmmaSharp
         /// <param name="end">Pagination: end page. Defaults to first page (e.g. 500).</param>
         /// <returns>An array of import details.</returns>
         /// <remarks></remarks>
-        public List<Import> GetAllImports(int start = -1, int end = -1) 
+        public Task<List<Import>> GetAllImports(int start = -1, int end = -1) 
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/members/imports";
@@ -471,7 +472,7 @@ namespace EmmaSharp
         /// <param name="status">Class representing a list of Member statuses: ‘a’ (active), ‘o’ (optout), and/or ‘e’ (error).</param>
         /// <returns>True</returns>
         /// <remarks>Http404 if the group does not exist.</remarks>
-        public bool CopyMembersIntoStatusGroup(string groupId, CopyStatus status)
+        public Task<bool> CopyMembersIntoStatusGroup(string groupId, CopyStatus status)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/{groupId}/copy";
@@ -479,7 +480,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(status);
+            request.AddJsonBody(status);
 
             return Execute<bool>(request);
         }
@@ -492,7 +493,7 @@ namespace EmmaSharp
         /// <param name="groupId">Optional. Limit the update to members of the specified group</param>
         /// <returns>True</returns>
         /// <remarks>Http400 if the specified status is invalid</remarks>
-        public bool UpdateStatusOfGroupMembersBasedOnCurrentStatus(MemberStatusShort statusFrom, MemberStatusShort statusTo, string groupId = "")
+        public Task<bool> UpdateStatusOfGroupMembersBasedOnCurrentStatus(MemberStatusShort statusFrom, MemberStatusShort statusTo, string groupId = "")
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/members/status/{statusFrom}/to/{statusTo}";
@@ -503,7 +504,7 @@ namespace EmmaSharp
             {
                 request.RequestFormat = DataFormat.Json;
                 request.JsonSerializer = new EmmaJsonSerializer();
-                request.AddBody(new { group_id = groupId });
+                request.AddJsonBody(new { group_id = groupId });
             }
 
             return Execute<bool>(request);

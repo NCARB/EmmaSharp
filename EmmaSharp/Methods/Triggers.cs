@@ -4,6 +4,7 @@ using RestSharp;
 using RestSharp.Serializers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -16,7 +17,7 @@ namespace EmmaSharp
         /// </summary>
         /// <returns>A list of Triggers in the account.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public int GetTriggersCount()
+        public Task<int> GetTriggersCount()
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/triggers";
@@ -32,7 +33,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>A list of Triggers in the account.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public List<Trigger> GetTriggers(int start = -1, int end = -1)
+        public Task<List<Trigger>> GetTriggers(int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/triggers";
@@ -46,7 +47,7 @@ namespace EmmaSharp
         /// <param name="triggerId">The ID of the Trigger to return.</param>
         /// <returns>A trigger.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public Trigger GetTriggerById(string triggerId)
+        public Task<Trigger> GetTriggerById(string triggerId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/triggers/{triggerId}";
@@ -62,7 +63,7 @@ namespace EmmaSharp
         /// <param name="name">The updated name of the trigger.</param>
         /// <returns>The id of the updated trigger.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public int UpdateTrigger(string triggerId, string name)
+        public Task<int> UpdateTrigger(string triggerId, string name)
         {
             var request = new RestRequest(Method.PUT);
             request.Resource = "/{accountId}/triggers/{triggerId}";
@@ -70,7 +71,7 @@ namespace EmmaSharp
 
             request.RequestFormat = DataFormat.Json;
             request.JsonSerializer = new EmmaJsonSerializer();
-            request.AddBody(new { name = name });
+            request.AddJsonBody(new { name = name });
 
             return Execute<int>(request);
         }
@@ -81,7 +82,7 @@ namespace EmmaSharp
         /// <param name="triggerId">ID of the trigger to be deleted.</param>
         /// <returns>True if the trigger is deleted.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public bool DeleteTrigger(string triggerId)
+        public Task<bool> DeleteTrigger(string triggerId)
         {
             var request = new RestRequest(Method.DELETE);
             request.Resource = "/{accountId}/triggers/{triggerId}";
@@ -96,7 +97,7 @@ namespace EmmaSharp
         /// <param name="triggerId">The trigger ID of the returned mailings.</param>
         /// <returns>An array of mailings.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public int GetMailingsByTriggerCount(string triggerId)
+        public Task<int> GetMailingsByTriggerCount(string triggerId)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/triggers/{triggerId}/mailings";
@@ -114,7 +115,7 @@ namespace EmmaSharp
         /// <param name="end">End paging record at.</param>
         /// <returns>An array of mailings.</returns>
         [Obsolete("Trigger endpoints have been deprecated, and will be removed in future releases.")]
-        public List<MailingTrigger> GetMailingsByTrigger(string triggerId, int start = -1, int end = -1)
+        public Task<List<MailingTrigger>> GetMailingsByTrigger(string triggerId, int start = -1, int end = -1)
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/triggers/{triggerId}/mailings";

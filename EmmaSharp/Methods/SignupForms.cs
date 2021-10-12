@@ -1,6 +1,7 @@
 ﻿using EmmaSharp.Models.SignupForms;
 using RestSharp;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EmmaSharp
 {
@@ -15,7 +16,7 @@ namespace EmmaSharp
         /// Gets a list of this account’s signup forms.
         /// </summary>
         /// <returns>An array of signup forms.</returns>
-        public List<SignupForm> GetSignupForms()
+        public Task<List<SignupForm>> GetSignupForms()
         {
             var request = new RestRequest();
             request.Resource = "/{accountId}/signup_forms";
