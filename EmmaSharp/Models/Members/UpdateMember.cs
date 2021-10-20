@@ -22,7 +22,7 @@ namespace EmmaSharp.Models.Members
         /// A new status for the member. Accepts one of ‘a’ (active), ‘e’ (error), ‘o’ (opt-out).
         /// </summary>
         [JsonProperty("status_to", NullValueHandling = NullValueHandling.Ignore)]
-        public MemberStatusShort StatusTo { get; set; }
+        public MemberStatusShort? StatusTo { get; set; }
 
         /// <summary>
         /// An array of fields with associated values for this member
@@ -34,6 +34,6 @@ namespace EmmaSharp.Models.Members
         /// Optional. Fires related field change autoresponders when set to true.
         /// </summary>
         [JsonProperty("field_triggers", NullValueHandling = NullValueHandling.Ignore)]
-        public bool FieldTriggers { get; set; }
+        public bool? FieldTriggers { get; set; }
     }
 }
