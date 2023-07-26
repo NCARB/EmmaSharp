@@ -49,6 +49,6 @@ jobs:
           dotnet nuget push artifacts/*.nupkg \
             --api-key $NUGET_ACCESS_TOKEN \
             --source $NUGET_SOURCE \
-            --skip-duplicates \
+            --skip-duplicate \
             --symbol-source $NUGET_SYMBOL_SOURCE \
             --symbol-api-key $NUGET_ACCESS_TOKEN
